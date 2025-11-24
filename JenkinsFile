@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven3'
+        jdk 'Java17'
+    }
+
+    stages {
+
+        stage('Clone Code') {
+            steps {
+                git 'https://github.com/sritej07/mavenjava.git'
+            }
+        }
+
+        stage('Build WAR') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Deploy to Tomcat') {
+            steps {
+                deploy adapters: [
+                    tomcat9(credentialsId: 'tomcat-cred', path: '', 
+                        url: 'http://localhost:8080')
+                ], war: 'target/mywebapp.war'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment successful!"
+        }
+    }
+}
