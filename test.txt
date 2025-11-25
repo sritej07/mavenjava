@@ -1,0 +1,393 @@
+Start Minikube
+minikube start
+
+Create NGINX Deployment
+kubectl create deployment nginx --image=nginx
+
+Expose Deployment as a NodePort Service
+kubectl expose deployment nginx --type=NodePort --port=80
+
+Check Pods
+kubectl get pods
+
+Check Services
+kubectl get svc
+
+Open NGINX in Browser
+minikube service nginx
+
+📌 OUTPUT YOU SHOULD SEE
+
+This will open:
+
+Welcome to nginx!
+
+1. Create Maven Web App (Standard Java WAR Project)
+mvn archetype:generate -DgroupId=com.example -DartifactId=mywebapp -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+2. Go inside the project
+cd mywebapp
+
+✅ 3. Build the WAR file
+mvn clean package
+
+
+WAR will be created at:
+
+target\mywebapp.war
+
+✅ 4. Copy WAR file to Tomcat webapps folder
+
+(Change the Tomcat path if needed)
+
+copy target\mywebapp.war C:\apache-tomcat-9.0.85\webapps\
+
+✅ 5. Restart Tomcat (Windows)
+Stop Tomcat:
+C:\apache-tomcat-9.0.85\bin\shutdown.bat
+
+Start Tomcat:
+C:\apache-tomcat-9.0.85\bin\startup.bat
+
+✅ 6. Verify Tomcat Deployment (browser)
+
+(No command, but URL below)
+
+http://localhost:8080/mywebapp
+
+✅ 7. Git Commands (for pushing your code to GitHub)
+
+Initialize Git repo:
+
+git init
+
+
+Add all files:
+
+git add .
+
+
+Commit:
+
+git commit -m "initial commit"
+
+
+Add remote:
+
+git remote add origin https://github.com/YOUR_USERNAME/mywebapp.git
+
+
+Push to GitHub:
+
+git push -u origin main
+
+🔥 8. Jenkins Webhook Trigger Test (Git push)
+
+Make a small change, then:
+
+git add .
+git commit -m "trigger jenkins build"
+git push origin main
+
+
+This will trigger Jenkins automatically.
+
+🎯 9. Useful Jenkins CLI commands (Optional)
+
+(Only if Jenkins CLI is enabled — ignore if not needed)
+
+Trigger job manually:
+
+java -jar jenkins-cli.jar -s http://localhost:8080/ build WebApp-Pipeline
+
+
+Check job status:
+
+java -jar jenkins-cli.jar -s http://localhost:8080/ console WebApp-Pipeline
+
+1. On Your Local Machine (Git Setup)
+Run these in your project folder to push the code to GitHub.
+
+Bash
+
+git init
+git add .
+git commit -m "web deployment commit"
+git remote add origin <your-github-repo-url>
+git push -u origin main
+2. On Your Local Machine (Connect to AWS)
+Run this to log in to the server.
+
+Bash
+
+ssh -i "webapplication.pem" ubuntu@<your-ec2-public-ip>
+3. Inside the AWS EC2 Terminal (Installation & Deployment)
+Run these one by one to install Docker, pull code, and run the app.
+
+Bash
+
+# Install Docker and Nano
+sudo apt-get update
+sudo apt-get install docker.io
+sudo apt-get install nano
+
+# Clone the repository
+git clone <your-github-repo-url>
+
+# Navigate to the folder
+cd WebDeployment
+
+# Create the Dockerfile
+nano Dockerfile
+(Inside the Nano editor, type these lines):
+
+Dockerfile
+
+FROM nginx:alpine
+COPY /usr/share/nginx/html
+(Press Ctrl+O then Enter to save, and Ctrl+X to exit)
+
+Bash
+
+# Build the Docker Image
+sudo docker build -t html-webapplication .
+
+# Run the Container
+sudo docker run -d -p 80:80 html-webapplication:latest
+
+Classes and Their Details
+1. Book
+
+Attributes
+
+bookId : String
+
+title : String
+
+author : String
+
+publisher : String
+
+isAvailable : Boolean
+
+Methods
+
+checkAvailability() : Boolean
+
+updateAvailability(status : Boolean) : void
+
+2. Member
+
+Attributes
+
+memberId : String
+
+name : String
+
+phone : String
+
+email : String
+
+Methods
+
+borrowBook(book : Book) : void
+
+returnBook(book : Book) : void
+
+3. Librarian
+
+Attributes
+
+librarianId : String
+
+name : String
+
+Methods
+
+issueBook(member : Member, book : Book) : IssueRecord
+
+receiveBook(member : Member, book : Book) : void
+
+4. IssueRecord
+
+Attributes
+
+issueId : String
+
+issueDate : Date
+
+dueDate : Date
+
+returnDate : Date
+
+fineAmount : Double
+
+Methods
+
+calculateFine() : Double
+
+Relationships + Multiplicity
+Member ↔ IssueRecord
+
+A Member can borrow many books.
+
+One IssueRecord belongs to one Member.
+Multiplicity:
+
+Member 1..* → IssueRecord
+
+IssueRecord 1 → Member
+
+Book ↔ IssueRecord
+
+A Book can appear in many issue records over time.
+
+One IssueRecord is for one Book.
+Multiplicity:
+
+Book 1..* → IssueRecord
+
+IssueRecord 1 → Book
+
+Librarian ↔ IssueRecord
+
+A Librarian handles many issue/return transactions.
+
+Each IssueRecord is processed by one Librarian.
+Multiplicity:
+
+Librarian 1..* → IssueRecord
+
+IssueRecord 1 → Librarian
+
+Member ↔ Book (Indirect via IssueRecord)
+
+Member does not directly own books. Relationship is through IssueRecord.
+
+OTRS
+
+Classes and Their Details
+1. User
+
+Attributes
+
+userId : String
+
+name : String
+
+email : String
+
+phone : String
+
+Methods
+
+searchShow(showName : String) : List<Show>
+
+bookTicket(show : Show, seats : int) : Booking
+
+cancelTicket(booking : Booking) : void
+
+2. Movie
+
+Attributes
+
+movieId : String
+
+title : String
+
+genre : String
+
+duration : int
+
+Methods
+
+getInfo() : String
+
+3. Show
+
+Attributes
+
+showId : String
+
+showTime : DateTime
+
+availableSeats : int
+
+ticketPrice : double
+
+Methods
+
+updateAvailableSeats(count : int) : void
+
+4. Booking
+
+Attributes
+
+bookingId : String
+
+bookingDate : Date
+
+numberOfSeats : int
+
+totalAmount : double
+
+bookingStatus : String
+
+Methods
+
+calculateAmount() : double
+
+5. Payment
+
+Attributes
+
+paymentId : String
+
+amount : double
+
+paymentDate : Date
+
+paymentStatus : String
+
+Methods
+
+makePayment() : boolean
+
+refund() : boolean
+
+Relationships + Multiplicity
+User ↔ Booking
+
+A User can make multiple bookings.
+
+Each Booking is associated with one User.
+Multiplicity:
+
+User 1 → Booking 0..*
+
+Movie ↔ Show
+
+A Movie can have multiple shows.
+
+Each Show belongs to one Movie.
+Multiplicity:
+
+Movie 1 → Show 1..*
+
+Show ↔ Booking
+
+One Show can have many bookings.
+
+Each Booking is for one Show.
+Multiplicity:
+
+Show 1 → Booking 0..*
+
+Booking ↔ Payment
+
+Each Booking has one Payment.
+
+Payment belongs to one Booking.
+Multiplicity:
+
+Booking 1 → Payment 1
