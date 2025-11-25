@@ -3,36 +3,45 @@ pipeline {
 
     tools {
         maven 'MAVEN_HOME'
-        jdk 'JAVA_HOME'
     }
 
     stages {
 
-        stage('Clone Code') {
+        stage('Checkout from GitHub') {
             steps {
-                git 'https://github.com/sritej07/mavenjava.git'
+                deleteDir()
+                git url: 'https://github.com/<your-repo>.git', branch: 'main'
             }
         }
 
-        stage('Build WAR') {
+        stage('Clean') {
             steps {
-                bat 'mvn clean package'
+                bat 'mvn clean'
             }
         }
 
-        stage('Deploy to Tomcat') {
+        stage('Install') {
             steps {
-                deploy adapters: [
-                    tomcat9(credentialsId: 'tomcat', path: '', 
-                        url: 'http://localhost:8080')
-                ], war: 'target/mywebapp.war'
+                bat 'mvn install'
             }
         }
-    }
 
-    post {
-        success {
-            echo "Deployment successful!"
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn package'
+            }
+        }
+
+        stage('Final Output') {
+            steps {
+                echo "Build Completed Successfully"
+            }
         }
     }
 }
