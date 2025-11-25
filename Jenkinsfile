@@ -10,7 +10,7 @@ pipeline {
 
         stage('Clone Code') {
             steps {
-                git 'https://github.com/sritej07/mavenjava.git'
+                git clone 'https://github.com/sritej07/mavenjava.git'
             }
         }
 
