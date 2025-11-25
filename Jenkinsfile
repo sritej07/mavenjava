@@ -23,7 +23,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 deploy adapters: [
-                    tomcat9(credentialsId: 'tomcat-cred', path: '', 
+                    tomcat9(credentialsId: 'tomcat', path: '', 
                         url: 'http://localhost:8080')
                 ], war: 'target/mywebapp.war'
             }
