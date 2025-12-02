@@ -211,3 +211,32 @@ root@415f72dcff3f:/usr/share/nginx/html# service nginx start
 
 curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDH9ELPKiXZHfUEQjgKk2xd_LY4pKyrFQc" -H "Content-Type: application/json" -d "{ \"contents\": [ { \"parts\": [ { \"text\": \"good morning\" } ] } ] }" > res.json
 powershell -Command "(Get-Content res.json | ConvertFrom-Json).candidates[0].content.parts[0].text"
+
+FROM tomcat:9.0
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
+EXPOSE 7007
+CMD ["catalina.sh","run"]
+
+services:
+  campusmgmtsystem:
+    image: your-dockerhub-username/your-app-image:latest   # replace with your app image
+    container_name: campus_app
+    ports:
+      - "7079:8080"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URL: "mongodb://mongodb:27017/campusdb"
+
+  mongodb:
+    image: mongo:6.0
+    container_name: campus_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+
