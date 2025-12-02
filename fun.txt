@@ -1,1 +1,213 @@
-bantii
+WEEK 8 — Jenkins Freestyle Automation (Fixed & Simplified)
+A. Maven Java Project – Build + Test + Pipeline View
+1. Jenkins Java Build Job
+●	New Item → MavenJava_Build → Freestyle project
+●	Source Code Management → Git → Repo URL
+●	Branches to build: */main
+●	Build Steps:
+o	Invoke Maven (MAVEN_HOME) → Goals: clean
+o	Invoke Maven (MAVEN_HOME) → Goals: install
+●	Post-build:
+o	Archive artifacts: **/*
+o	Build other projects → MavenJava_Test (Trigger: Only if build is stable)
+●	Save.
+2. Jenkins Java Test Job
+●	New Item → MavenJava_Test → Freestyle
+●	Build Environment: Delete workspace before build starts
+●	Build Steps:
+o	Copy artifacts from: MavenJava_Build, Artifacts: **/*
+o	Invoke Maven → test
+●	Post-build: Archive: **/*
+●	Save.
+3. Pipeline View
+●	Dashboard → + New View → Build Pipeline View
+●	Initial Job: MavenJava_Build
+●	Save.
+________________________________________
+✅ WEEK 9 — Jenkins Scripted Pipeline (Corrected)
+New Item → jenkins_script → Pipeline
+Correct Script:
+pipeline {
+    agent any
+
+    tools {
+        maven 'MAVEN_HOME'
+    }
+
+    stages {
+
+        stage('Checkout from GitHub') {
+            steps {
+                deleteDir()
+                git url: 'https://github.com/<your-repo>.git', branch: 'main'
+            }
+        }
+
+        stage('Clean') {
+            steps {
+                bat 'mvn clean'
+            }
+        }
+
+        stage('Install') {
+            steps {
+                bat 'mvn install'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn package'
+            }
+        }
+
+        stage('Final Output') {
+            steps {
+                echo "Build Completed Successfully"
+            }
+        }
+    }
+}
+Trigger (Optional):
+Build periodically: * * * * *
+
+________________________________________
+✅ WEEK 10 — Minikube + Nagios (Corrected)
+A. Minikube – Nginx Deployment
+1. Install and Start Minikube
+
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-windows-amd64.exe
+minikube start --driver=docker
+
+2. Verify Cluster
+minikube status
+minikube kubectl -- get pods -A
+
+3. Create Deployment
+kubectl create deployment mynginx --image=nginx
+kubectl get deployments
+kubectl get pods
+
+4. Expose as NodePort
+kubectl expose deployment mynginx --type=NodePort --port=80 --target-port=80
+kubectl get svc
+
+5. Scale Pods
+kubectl scale deployment mynginx --replicas=4
+
+6. Access Application
+
+kubectl port-forward svc/mynginx 8081:80
+Open: http://localhost:8081
+If port-forward fails:
+minikube tunnel
+minikube service mynginx --url
+
+7. Cleanup
+kubectl delete deployment mynginx
+kubectl delete service mynginx
+minikube stop
+minikube delete
+________________________________________
+B. Nagios Monitoring using Docker
+1. Pull Image
+docker pull jasonrivers/nagios:latest
+2. Run Nagios
+docker run --name nagiosdemo -p 8888:80 jasonrivers/nagios:latest
+3. Access UI
+Open: http://localhost:8888 - username: nagiosadmin - password: nagios
+4. Stop / Remove
+docker stop nagiosdemo
+docker rm nagiosdemo
+docker rmi jasonrivers/nagios:latest
+________________________________________
+✅ WEEK 11 — GitHub Webhook + Jenkins Email Notifications
+A. GitHub Webhook Integration (Corrected)
+1. Setup ngrok
+ngrok config add-authtoken <your_token>
+ngrok http 8080
+NOT: 8080/1 (this was wrong in original file)
+Copy generated URL:
+https://<random>.ngrok-free.dev
+
+2. Add Webhook in GitHub → Settings → Webhooks
+Payload URL:
+https://<ngrok-url>/github-webhook/
+Content type: application/json Event: Just push event
+3. Jenkins Job Trigger
+●	Open Jenkins → job → Configure
+●	Tick: GitHub hook trigger for GITScm polling
+
+________________________________________
+B. Jenkins Email Notification (Corrected)
+1. Generate Gmail App Password (2-step verification required)
+2. Install Jenkins Plugin: Email Extension Plugin
+3. Configure Global Settings:
+SMTP Server: smtp.gmail.com
+Port: 465
+SSL: Enabled
+Username: your Gmail
+Password: your app password
+
+4. In Job → Post-build Action: Editable Email Notification
+________________________________________
+✅ WEEK 12 — AWS EC2 + Docker Deployment (Corrected)
+A. Create EC2 Instance
+●	Launch instance → Ubuntu → t2.micro
+●	Create key pair (.pem)
+●	Allow: SSH, HTTP, HTTPS
+●	Launch
+
+B. SSH into Instance (Corrected Step)
+chmod 400 MyKey.pem
+ssh -i "MyKey.pem" ubuntu@<public-ip>
+
+C. Install Dependencies
+sudo apt update
+sudo apt-get install docker.io\sudo apt install git
+sudo apt install nano
+D. Deploy index.html using Docker (Corrected)
+git clone <repo>
+cd repo
+nano Dockerfile
+Add:
+
+FROM nginx:alpine
+COPY . /usr/share/nginx/html/
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+Build & Run:
+
+sudo docker build -t mywebapp .
+
+sudo docker run -d -p 80:80 mywebapp
+Visit:
+http://<EC2-public-ip>
+
+If not working: Add inbound rule for port 80 or 9090.
+
+C:\Users\SRINIJ\OneDrive\Desktop\app\docker-commands>docker pull ubuntu:latest
+latest: Pulling from library/ubuntu 
+C:\Users\SRINIJ\OneDrive\Desktop\app\docker-commands>docker run -it -p 9090:80 --name myubuntu1 ubuntu:latest 
+root@415f72dcff3f:/# apt update
+root@415f72dcff3f:/# apt install nginx 
+root@415f72dcff3f:/# cd usr
+root@415f72dcff3f:/usr# cd share 
+root@415f72dcff3f:/usr/share# cd nginx 
+root@415f72dcff3f:/usr/share/nginx# ls 
+html modules 
+root@415f72dcff3f:/usr/share/nginx# cd html 
+root@415f72dcff3f:/usr/share/nginx/html# ls
+index.html 
+root@415f72dcff3f:/usr/share/nginx/html# nano index.html
+root@415f72dcff3f:/usr/share/nginx/html# service nginx start
+
+curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDH9ELPKiXZHfUEQjgKk2xd_LY4pKyrFQc" -H "Content-Type: application/json" -d "{ \"contents\": [ { \"parts\": [ { \"text\": \"good morning\" } ] } ] }" > res.json
+powershell -Command "(Get-Content res.json | ConvertFrom-Json).candidates[0].content.parts[0].text"
